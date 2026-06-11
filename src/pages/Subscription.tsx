@@ -109,39 +109,47 @@ export function Subscription() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg pt-md">
-          {plans?.filter(p => p.tier_name !== 'Free').map((plan: any) => {
-            const isMonthly = true; // Assuming we want to show monthly price
-            const isCurrent = isCurrentPlan(plan.tier_name);
-            const price = isMonthly ? plan.monthly_price : plan.yearly_price;
+          {plans?.filter(p => p.id !== 'trial').map((plan) => {
+            const isCurrent = isCurrentPlan(plan.id);
+            const price = plan.display_price_usd;
+            const details = plan.id === 'weekly' 
+              ? {
+                  description: "Perfect for short-term trading & analysis",
+                  features: ["Full access to Max Pain & PCR", "Real-time Options Chain", "7-Factor Algo Signals", "Premium Market Summary"]
+                }
+              : {
+                  description: "Best value for serious traders",
+                  features: ["Everything in Weekly", "Priority API Access", "Advanced Trend Analysis", "Email & Priority Support"]
+                };
             
             return (
               <motion.div 
-                key={plan.tier_name}
+                key={plan.id}
                 whileHover={{ y: -5 }}
                 className={`bg-surface border rounded-2xl p-xl flex flex-col relative ${
                   isCurrent ? 'border-primary shadow-xl' : 'border-outline-variant/30'
                 }`}
               >
-                {plan.tier_name === 'Monthly' && (
+                {plan.id === 'monthly' && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-xs font-bold tracking-wider">
                     MOST POPULAR
                   </div>
                 )}
                 
-                <h3 className="font-headline-sm text-2xl text-on-surface mb-xs">{plan.tier_name}</h3>
-                <p className="font-body-sm text-on-surface-variant mb-lg">{plan.description}</p>
+                <h3 className="font-headline-sm text-2xl text-on-surface mb-xs">{plan.display_label}</h3>
+                <p className="font-body-sm text-on-surface-variant mb-lg">{details.description}</p>
                 
                 <div className="mb-xl flex items-end gap-2">
                   <span className="font-headline-lg text-5xl text-on-surface">
-                    ${price}
+                    {price}
                   </span>
                   <span className="font-body-md text-on-surface-variant mb-1">
-                    {plan.tier_name.toLowerCase() === 'weekly' ? '/ week' : '/ mo'}
+                    {plan.id === 'weekly' ? '/ week' : '/ mo'}
                   </span>
                 </div>
 
                 <ul className="space-y-md mb-xl flex-1">
-                  {(plan.features || []).map((feat: string, i: number) => (
+                  {details.features.map((feat: string, i: number) => (
                     <li key={i} className="flex items-start gap-sm text-on-surface-variant font-body-md">
                       <span className="material-symbols-outlined text-primary">check_circle</span>
                       <span>{feat}</span>
@@ -150,7 +158,7 @@ export function Subscription() {
                 </ul>
 
                 <button 
-                  onClick={() => handleSubscribe(plan.tier_name.toLowerCase())}
+                  onClick={() => handleSubscribe(plan.id as 'weekly' | 'monthly')}
                   disabled={isProcessing || isCurrent}
                   className={`w-full py-3 rounded-xl font-label-md transition-all ${
                     isCurrent 
