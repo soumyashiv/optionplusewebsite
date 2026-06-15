@@ -81,6 +81,8 @@ export function AnalystWatchlist() {
                   const changeVal = item.change || 0;
                   const isUp = changeVal >= 0;
                   const changeColor = isUp ? 'text-green-600' : 'text-red-600';
+                  // A null ltp with no oi_label indicates this strike is outside ATM±5
+                  const isOutOfRange = item.ltp === null && !item.oi_label;
                   
                   return (
                     <tr key={item.id} className="hover:bg-surface-variant/20 transition-colors">
@@ -92,19 +94,30 @@ export function AnalystWatchlist() {
                           {item.option_type}
                         </span>
                       </td>
-                      <td className="px-md py-sm text-right font-mono">
-                        <span className="font-medium">{item.ltp !== null ? item.ltp.toFixed(2) : '-'}</span>
-                        {item.change !== null && (
-                          <span className={`${changeColor} text-xs ml-2`}>
-                            {isUp ? '+' : ''}{item.change.toFixed(1)}%
+                      {isOutOfRange ? (
+                        <td colSpan={2} className="px-md py-sm">
+                          <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-1 rounded-full">
+                            <span className="material-symbols-outlined text-xs">info</span>
+                            Outside ATM ±5 monitoring range
                           </span>
-                        )}
-                      </td>
-                      <td className="px-md py-sm text-center font-body-sm">
-                        <span className="text-xs text-on-surface-variant bg-surface-container rounded px-sm py-0.5">
-                          {item.oi_label || 'Neutral'}
-                        </span>
-                      </td>
+                        </td>
+                      ) : (
+                        <>
+                          <td className="px-md py-sm text-right font-mono">
+                            <span className="font-medium">{item.ltp !== null ? item.ltp.toFixed(2) : '—'}</span>
+                            {item.change !== null && (
+                              <span className={`${changeColor} text-xs ml-2`}>
+                                {isUp ? '+' : ''}{item.change.toFixed(1)}%
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-md py-sm text-center font-body-sm">
+                            <span className="text-xs text-on-surface-variant bg-surface-container rounded px-sm py-0.5">
+                              {item.oi_label || 'Neutral'}
+                            </span>
+                          </td>
+                        </>
+                      )}
                       <td className="px-md py-sm text-right flex items-center justify-end gap-sm">
                         <button 
                           onClick={() => handleRemove(item.id)}

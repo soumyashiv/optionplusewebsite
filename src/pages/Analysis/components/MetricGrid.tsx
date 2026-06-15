@@ -73,8 +73,8 @@ export function MetricGrid({ data, latestSnapshot }: MetricGridProps) {
         </div>
         
         <div className="bg-surface-container-low border border-outline-variant/30 rounded p-sm text-center">
-          <div className="font-label-sm text-label-sm text-on-surface-variant mb-1">Total Strikes</div>
-          <div className="font-body-md font-bold text-on-surface">{vis.length} Active</div>
+          <div className="font-label-sm text-label-sm text-on-surface-variant mb-1">Strikes</div>
+          <div className="font-body-md font-bold text-on-surface">{vis.length} <span className="text-xs text-on-surface-variant font-normal">ATM±5</span></div>
         </div>
       </div>
     </section>

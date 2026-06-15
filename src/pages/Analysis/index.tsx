@@ -4,6 +4,7 @@ import { AnalystHeader } from './components/AnalystHeader';
 import { AlgorithmGlimpse } from './components/AlgorithmGlimpse';
 import { MetricGrid } from './components/MetricGrid';
 import { AnalystTabs } from './components/AnalystTabs';
+import { UsedStrikesPanel } from './components/UsedStrikesPanel';
 import { useMarketStore } from '../../store/useMarketStore';
 import type { TimeframeMode } from '../../types/api';
 
@@ -25,6 +26,7 @@ export function Analysis() {
           wsState={timeframe === 'Realtime' ? wsState : ('connected' as const)} 
           lastUpdated={lastUpdated}
           error={error}
+          expiry={data?.expiry}
           maxPain={glimpseData?.backendAnalytics?.max_pain ?? latestSnapshot?.mpStrike ?? null}
           onRefresh={refresh}
         />
@@ -51,6 +53,14 @@ export function Analysis() {
         <AlgorithmGlimpse glimpseData={glimpseData} />
         
         {data && <MetricGrid data={data} latestSnapshot={latestSnapshot} />}
+
+        {data && (
+          <UsedStrikesPanel
+            atmSP={data.atmSP}
+            usedStrikes={data.usedStrikes}
+            expiry={data.expiry}
+          />
+        )}
 
         <AnalystTabs 
           data={data} 

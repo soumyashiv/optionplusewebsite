@@ -7,6 +7,7 @@ interface AnalystHeaderProps {
   wsState: 'connecting' | 'connected' | 'disconnected' | 'error';
   lastUpdated: Date | null;
   error: string | null;
+  expiry?: string;
   /** Real max-pain strike from backendAnalytics or snapshot calculation */
   maxPain?: number | null;
   onRefresh?: () => void;
@@ -39,7 +40,7 @@ const WS_STATUS_CONFIG = {
   error: { dot: 'bg-red-500', label: 'Error', color: 'text-red-600' },
 } as const;
 
-export function AnalystHeader({ data, wsState, lastUpdated, error, maxPain, onRefresh }: AnalystHeaderProps) {
+export function AnalystHeader({ data, wsState, lastUpdated, error, expiry, maxPain, onRefresh }: AnalystHeaderProps) {
   const spotDisplay = data ? data.spot.toLocaleString('en-IN') : '—';
   const relativeTime = useRelativeTime(lastUpdated);
   const status = WS_STATUS_CONFIG[wsState];
@@ -87,7 +88,14 @@ export function AnalystHeader({ data, wsState, lastUpdated, error, maxPain, onRe
           )}
         </div>
       </div>
-      <div className="flex gap-sm mt-md md:mt-0">
+      <div className="flex gap-sm mt-md md:mt-0 flex-wrap">
+        {/* Expiry Badge */}
+        {expiry && (
+          <div className="bg-indigo-50 border border-indigo-200/60 px-md py-sm rounded-lg flex flex-col justify-center">
+            <span className="font-label-sm text-label-sm text-indigo-700 uppercase tracking-wider mb-xs">Expiry</span>
+            <span className="font-headline-sm text-headline-sm font-bold text-indigo-900">{expiry}</span>
+          </div>
+        )}
         <div className="bg-surface-container-highest px-md py-sm rounded-lg border border-outline-variant/30 flex flex-col justify-center">
           <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Spot (NIFTY)</span>
           <span className="font-headline-sm text-headline-sm font-bold text-on-surface">{spotDisplay}</span>

@@ -22,7 +22,8 @@ export interface AnalystData {
   ts: string;
   expiry: string;
   map: OptionMap;
-  vis: number[];
+  vis: number[];         // strikes visible in the ATM±5 window
+  usedStrikes: number[]; // explicit list from backend for transparency panel
   allStrikes: number[];
   pcrOI: number;
   pcrCOI: number;
@@ -50,6 +51,7 @@ function parseMarketSummary(summaryRaw: unknown): { parsedData: AnalystData; sna
     atm_strike: number;
     timestamp: string;
     expiry: string;
+    used_strikes?: number[]; // provided by backend after ATM±5 optimization
   };
 
   const fullMap: OptionMap = {};
@@ -75,17 +77,15 @@ function parseMarketSummary(summaryRaw: unknown): { parsedData: AnalystData; sna
   const spot = summary.spot_price;
   const atmSP = summary.atm_strike;
   const ts = summary.timestamp;
-  const expiry = summary.expiry;
+  const expiry = summary.expiry || '';
 
-  let atmIdx = allStrikes.indexOf(atmSP);
-  if (atmIdx === -1) {
-    atmIdx = allStrikes.reduce((prevIdx, curr, idx) =>
-      Math.abs(curr - spot) < Math.abs(allStrikes[prevIdx] - spot) ? idx : prevIdx
-      , 0);
-  }
-
-  const range = 5;
-  const vis = allStrikes.slice(Math.max(0, atmIdx - range), Math.min(allStrikes.length - 1, atmIdx + range) + 1);
+  // Backend now delivers ONLY ATM±5 strikes.
+  // No frontend re-slicing needed: vis === allStrikes.
+  // used_strikes from backend provides the explicit list for the transparency panel.
+  const vis = allStrikes;
+  const usedStrikes: number[] = summary.used_strikes && summary.used_strikes.length > 0
+    ? summary.used_strikes
+    : allStrikes;
 
   let tCeOI = 0, tPeOI = 0, tCeCOI = 0, tPeCOI = 0;
   vis.forEach(sp => {
@@ -101,7 +101,7 @@ function parseMarketSummary(summaryRaw: unknown): { parsedData: AnalystData; sna
   const mpStrike = mpResult?.mpStrike || atmSP;
 
   const parsedData: AnalystData = {
-    spot, atmSP, ts, expiry, map: fullMap, vis, allStrikes,
+    spot, atmSP, ts, expiry, map: fullMap, vis, usedStrikes, allStrikes,
     pcrOI, pcrCOI, tCeOI, tPeOI, tCeCOI, tPeCOI
   };
 
