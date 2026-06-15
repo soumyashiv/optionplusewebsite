@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import type { GlimpseData } from '../../../utils/analystAlgorithms';
 
 interface AlgorithmGlimpseProps {
   glimpseData: GlimpseData | null;
 }
 
-export function AlgorithmGlimpse({ glimpseData }: AlgorithmGlimpseProps) {
+export const AlgorithmGlimpse = memo(function AlgorithmGlimpse({ glimpseData }: AlgorithmGlimpseProps) {
   if (!glimpseData) {
     return (
       <section>

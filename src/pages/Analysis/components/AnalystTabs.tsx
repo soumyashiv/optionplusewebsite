@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import type { AnalystData, Snapshot, PcrHistoryPoint } from '../../../hooks/useAnalyst';
 import type { GlimpseData } from '../../../utils/analystAlgorithms';
 import { OptionChainTab } from './tabs/OptionChainTab';
@@ -23,7 +23,7 @@ const TABS = [
   '7 Factor Algo'
 ];
 
-export function AnalystTabs({ 
+export const AnalystTabs = memo(function AnalystTabs({ 
   data, 
   history,
   pcrHistory,

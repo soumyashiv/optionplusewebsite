@@ -1,4 +1,5 @@
 
+import { memo } from 'react';
 import type { AnalystData, Snapshot } from '../../../hooks/useAnalyst';
 import { calcPF } from '../../../utils/analystAlgorithms';
 
@@ -7,7 +8,7 @@ interface MetricGridProps {
   latestSnapshot: Snapshot | null;
 }
 
-export function MetricGrid({ data, latestSnapshot }: MetricGridProps) {
+export const MetricGrid = memo(function MetricGrid({ data, latestSnapshot }: MetricGridProps) {
   if (!data) return null;
 
   const { spot, atmSP, pcrOI, pcrCOI, vis } = data;

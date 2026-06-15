@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import type { AnalystData } from '../../../hooks/useAnalyst';
 
 interface AnalystHeaderProps {
@@ -40,7 +40,7 @@ const WS_STATUS_CONFIG = {
   error: { dot: 'bg-red-500', label: 'Error', color: 'text-red-600' },
 } as const;
 
-export function AnalystHeader({ data, wsState, lastUpdated, error, expiry, maxPain, onRefresh }: AnalystHeaderProps) {
+export const AnalystHeader = memo(function AnalystHeader({ data, wsState, lastUpdated, error, expiry, maxPain, onRefresh }: AnalystHeaderProps) {
   const spotDisplay = data ? data.spot.toLocaleString('en-IN') : '—';
   const relativeTime = useRelativeTime(lastUpdated);
   const status = WS_STATUS_CONFIG[wsState];
