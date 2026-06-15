@@ -46,6 +46,9 @@ export interface SessionRecord {
   put_ltp: number;
   fetched_at: string;
   created_at: string;
+  bucket?: string;
+  timestamp?: string;
+  payload?: any;
 }
 
 export type TimeframeMode = 'Realtime' | '5m' | '15m' | '30m' | '1Hr' | '4Hr' | '1Day';

@@ -12,7 +12,7 @@ const TIMEFRAMES: TimeframeMode[] = ['Realtime', '5m', '15m', '30m'];
 export function Analysis() {
   const [timeframe, setTimeframe] = useState<TimeframeMode>('Realtime');
   const { symbol } = useMarketStore();
-  const { data, history, pcrHistory, pcrHistoryLoading, glimpseData, wsState, lastUpdated, error } = useAnalyst(symbol, timeframe);
+  const { data, history, pcrHistory, pcrHistoryLoading, glimpseData, wsState, lastUpdated, error, refresh } = useAnalyst(symbol, timeframe);
   
   const latestSnapshot = history.length > 0 ? history[0] : null;
 
@@ -26,6 +26,7 @@ export function Analysis() {
           lastUpdated={lastUpdated}
           error={error}
           maxPain={glimpseData?.backendAnalytics?.max_pain ?? latestSnapshot?.mpStrike ?? null}
+          onRefresh={refresh}
         />
         
         {/* Timeframe Selector */}

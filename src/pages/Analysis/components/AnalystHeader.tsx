@@ -9,6 +9,7 @@ interface AnalystHeaderProps {
   error: string | null;
   /** Real max-pain strike from backendAnalytics or snapshot calculation */
   maxPain?: number | null;
+  onRefresh?: () => void;
 }
 
 /** Returns a human-readable "X seconds ago" string, auto-updating every second. */
@@ -38,7 +39,7 @@ const WS_STATUS_CONFIG = {
   error: { dot: 'bg-red-500', label: 'Error', color: 'text-red-600' },
 } as const;
 
-export function AnalystHeader({ data, wsState, lastUpdated, error, maxPain }: AnalystHeaderProps) {
+export function AnalystHeader({ data, wsState, lastUpdated, error, maxPain, onRefresh }: AnalystHeaderProps) {
   const spotDisplay = data ? data.spot.toLocaleString('en-IN') : '—';
   const relativeTime = useRelativeTime(lastUpdated);
   const status = WS_STATUS_CONFIG[wsState];
@@ -49,7 +50,21 @@ export function AnalystHeader({ data, wsState, lastUpdated, error, maxPain }: An
   return (
     <header className="px-gutter py-md lg:px-margin-desktop lg:py-lg flex flex-col md:flex-row justify-between items-start md:items-end border-b border-outline-variant/20 bg-surface/50 backdrop-blur-sm z-10 sticky top-0">
       <div>
-        <h2 className="font-headline-md text-headline-md text-on-surface mb-xs">F&amp;O Analysis</h2>
+        <div className="flex items-center gap-sm mb-xs">
+          <h2 className="font-headline-md text-headline-md text-on-surface">F&amp;O Analysis</h2>
+          {onRefresh && (
+            <button 
+              onClick={onRefresh}
+              className="p-1.5 rounded-full hover:bg-surface-variant text-on-surface-variant transition-colors"
+              title="Refresh Data"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-md font-body-sm text-on-surface-variant flex-wrap">
           {/* Connection Status */}
           <div className="flex items-center gap-xs">

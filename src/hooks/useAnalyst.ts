@@ -115,14 +115,20 @@ function parseMarketSummary(summaryRaw: unknown): { parsedData: AnalystData; sna
 
 export function useAnalyst(symbol: string, timeframe: TimeframeMode) {
   // Use React Query for Market Summary (Realtime WS updates this via queryClient)
-  const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useMarketSummaryQuery(symbol);
+  const { data: summaryData, isLoading: summaryLoading, error: summaryError, refetch: refetchSummary } = useMarketSummaryQuery(symbol);
 
   // Pre-computed analytics from backend (MaxPain, UA, CA, Clex, 7-Factor)
-  const { data: analyticsData } = useAnalyticsQuery(symbol);
+  const { data: analyticsData, refetch: refetchAnalytics } = useAnalyticsQuery(symbol);
 
   // PCR History from API
   const pcrLimit = timeframe === 'Realtime' ? 100 : 20;
-  const { data: pcrHistoryRes, isLoading: pcrHistoryLoading } = usePcrHistoryQuery(symbol, pcrLimit);
+  const { data: pcrHistoryRes, isLoading: pcrHistoryLoading, refetch: refetchPcr } = usePcrHistoryQuery(symbol, pcrLimit);
+
+  const refresh = () => {
+    refetchSummary();
+    refetchAnalytics();
+    refetchPcr();
+  };
   const pcrHistory = pcrHistoryRes?.points || [];
 
   const [history, setHistory] = useState<Snapshot[]>([]);
@@ -167,7 +173,7 @@ export function useAnalyst(symbol: string, timeframe: TimeframeMode) {
         else if (timeframe === '4Hr') intervalParam = '4h';
         else if (timeframe === '1Day') intervalParam = '1d';
 
-        const response = await getSessionRecords(session.id, intervalParam);
+        const response = await getSessionRecords(session.id, intervalParam, 1, 10000);
         if (!mounted) return;
 
         // API returns { data: [...], total, page, total_pages }
@@ -183,7 +189,7 @@ export function useAnalyst(symbol: string, timeframe: TimeframeMode) {
             continue;
           }
           
-          const ts = record.fetched_at || record.timestamp;
+          const ts = record.bucket || record.fetched_at || record.timestamp;
           if (!ts) continue;
           
           if (!grouped[ts]) {
@@ -327,5 +333,6 @@ export function useAnalyst(symbol: string, timeframe: TimeframeMode) {
     lastUpdated: summaryData ? new Date((summaryData as any).timestamp) : null,
     error,
     isLoading: summaryLoading,
+    refresh,
   };
 }
